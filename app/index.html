@@ -1,105 +1,450 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
 
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <style>
-            body {
-                padding-top: 50px;
-                padding-bottom: 20px;
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Observatorio de Movilidad</title>
+
+    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CartoDB CSS -->
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+
+    <!-- MapBox CSS -->
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css' rel='stylesheet' />
+
+    <!-- Freelancer theme CSS -->
+    <link href="css/freelancer.css" rel="stylesheet">
+
+    <!-- Custom styles -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/charts.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+
+</head>
+
+<body id="page-top" class="index">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#page-top">Observatorio de Movilidad</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#estadisticas">Estadísticas</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#histograma">Histograma</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#datasets">Datos</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="#about">Acerca</a>
+                    </li>
+                    <!--
+                    <li class="page-scroll">
+                        <a href="#contact">Contact</a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <!-- Mapa -->
+    <section id="mapa">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <br />
+                    <br />
+                    <br />
+                    <h2>Mapa de percances</h2>
+                    <br />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div id="map2"></div>
+                    <br />
+                    <div id="buttons">
+                        <button id="sublayer0" type="button" class="btn btn-danger">Colisiones</button>
+                        <button id="sublayer1" type="button" class="btn btn-warning">Otros</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Estadísticas -->
+    <section id="estadisticas">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Estadísticas</h2>
+                    <br />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <!-- <h3>Percances por mes</h3>
+                    <div id="percances">
+                    </div>
+                    -->
+
+                    <h3>Principales causas de percances</h3>
+                    <div id="causas">
+                        <!-- bar.js -->
+                    </div>
+
+                    <!-- 
+                    <h3>Las 10 calles con más percances</h3>
+                    <div id="10calles">
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Histograma de percances -->
+    <section id="histograma">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Histograma de percances</h2>
+                    <br />
+                    <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger strip steak short ribs pig, pork chop pork ham hock cupim bresaola frankfurter chuck.</p>
+                    <br />
+                </div>
+            </div>
+            <div class="row">
+                <div id="map-container" class="col-lg-12 text-center">
+                    <div id="map" class="col-lg-8 col-lg-offset-3 text-center"></div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <!-- 
+    <section class="success" id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Histograma de colisiones</h2>
+                </div>
+            </div>
+            <div class="row">
+                
+            </div>
+        </div>
+    </section>
+    -->
+
+    <!-- Contact Section -->
+    
+    <section class="success" id="datos">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                <h2>Datos</h2>
+                <br />
+                <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger strip steak short ribs pig, pork chop pork ham hock cupim bresaola frankfurter chuck.</p>
+                </div>
+            </div>
+            <br />
+            <br />
+            <div class="row">        
+                    <div class="col-sm-3 data-item">
+                        <div class="dataset">
+                            <h4>Dataset 1</h4>
+                            <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                            <button type="button" class="btn btn-warning">CSV</button>
+                            <button type="button" class="btn btn-info">JSON</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 data-item">
+                        <div class="dataset">
+                            <h4>Dataset 2</h4>
+                            <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                            <button type="button" class="btn btn-warning">CSV</button>
+                            <button type="button" class="btn btn-danger">KML</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 data-item">
+                        <div class="dataset">
+                            <h4>Dataset 3</h4>
+                            <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                            <button type="button" class="btn btn-warning">CSV</button>
+                            <button type="button" class="btn btn-info">JSON</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 data-item">
+                        <div class="dataset">
+                            <h4>Dataset 4</h4>
+                            <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                            <button type="button" class="btn btn-warning">CSV</button>
+                            <button type="button" class="btn btn-danger">KML</button>
+                        </div>
+                    </div>
+            </div>
+            <br />
+            <br />
+            <div class="row">
+                <div class="col-sm-3 data-item">
+                    <div class="dataset">
+                        <h4>Dataset 1</h4>
+                        <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                        <button type="button" class="btn btn-warning">CSV</button>
+                        <button type="button" class="btn btn-danger">KML</button>
+                    </div>
+                </div>
+                <div class="col-sm-3 data-item">
+                    <div class="dataset">
+                        <h4>Dataset 2</h4>
+                        <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                        <button type="button" class="btn btn-warning">CSV</button>
+                        <button type="button" class="btn btn-info">JSON</button>
+                    </div>
+                </div>
+                <div class="col-sm-3 data-item">
+                    <div class="dataset">
+                        <h4>Dataset 3</h4>
+                        <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                        <button type="button" class="btn btn-warning">CSV</button>
+                        <button type="button" class="btn btn-danger">KML</button>
+                    </div>
+                </div>
+                <div class="col-sm-3 data-item">
+                    <div class="dataset">
+                        <h4>Dataset 4</h4>
+                        <p>Bacon ipsum dolor amet capicola pork belly landjaeger hamburger.</p>
+                        <button type="button" class="btn btn-warning">CSV</button>
+                        <button type="button" class="btn btn-info">JSON</button>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="footer-above">
+            <div class="container">
+                <div class="row">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="footer-below">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        Un proyecto de <a href="http://www.codeandomexico.org">Codeando México</a>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- MapBox JS -->
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js'></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js'></script>
+    <script src='https://cartodb-libs.global.ssl.fastly.net/torque.full.js'></script>
+
+    <!-- CartoDB.js -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <!-- D3.js -->
+    <script src="js/d3.min.js"></script>
+    <!-- Charts -->
+    <script src="charts/bar.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/freelancer.js"></script>
+
+    <!-- CartoDB script -->
+    <!-- 
+    <script>
+      window.onload = function() {
+        var vizjson = 'http://miguelsalazar.cartodb.com/api/v2/viz/ed41fcfc-d8bd-11e4-94a2-0e018d66dc29/viz.json';
+        cartodb.createVis('map2', vizjson)
+          .done(function(vis,layers) {
+            // do stuff
+            console.log("Layers has " + layers.length + " layers.");
+          })
+          .error(function(err) {
+            // report error
+            console.log("An error occurred: " + err);
+          });
+
+
+      }
+    </script>
+    -->
+
+    <script>
+        // Instantiate new map object, place it in 'map' element
+        var map_object = new L.Map('map2', {
+            center: [43,0], // Southern France
+            zoom: 3
+        });
+
+        // Put layer data into a JS object
+        var layerSource = {
+                user_name: 'documentation',
+                type: 'cartodb',
+                sublayers: [{
+                    sql: "SELECT * FROM africa_adm0", // African countries
+                    cartocss: '#africa_adm0{polygon-fill:#FF6600;polygon-opacity:0.7;line-color:#FFF;line-width:1;line-opacity:1;}'
+                },
+                {
+                    sql: "SELECT * FROM ne_50m_lakes", // Natural and artificial lakes
+                    cartocss: '#ne_50m_lakes {polygon-fill:#0000FF;}'
+                }]
+        }
+
+        // For storing the sublayers
+        var sublayers = [];
+
+        // Pull tiles from OpenStreetMap
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map_object);
+
+        // Add data layer to your map
+        cartodb.createLayer(map_object,layerSource)
+            .addTo(map_object)
+            .done(function(layer) {
+               for (var i = 0; i < layer.getSubLayerCount(); i++) {
+                   sublayers[i] = layer.getSubLayer(i);
+               } 
+            })
+            .error(function(err) {
+                console.log("error: " + err);
+            });
+        
+        var sublayer0Shown = true;
+        $("#sublayer0").on('click', function() {
+            if (sublayer0Shown) {
+                sublayers[0].hide();
+            } else {
+                sublayers[0].show();
             }
-        </style>
-        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="css/main.css">
+            sublayer0Shown = !sublayer0Shown; 
+        });
 
-        <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-    </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Project name</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-        </div><!--/.navbar-collapse -->
-      </div>
-    </div>
+        var sublayer1Shown = true;
+        $("#sublayer1").on('click', function() {
+            if (sublayer1Shown) {
+                sublayers[1].hide();
+            } else {
+                sublayers[1].show();
+            }
+            sublayer1Shown = !sublayer1Shown; 
+        });
+    </script>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <div class="container">
-        <h1>Hello, world!</h1>
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
-      </div>
-    </div>
+    <!-- Torque script -->
+    <script>
+    L.mapbox.accessToken = 'pk.eyJ1IjoibWlndWVsc2FsYXphciIsImEiOiI1aC1PbDc0In0.7XFoN0VYeyfCYaxu0iobuQ';
+    var map = L.mapbox.map('map', 'examples.map-y7l23tes')
+        .setView([10, -10], 2);
 
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-      </div>
+    // Torque uses CartoCSS styles, similar to those in TileMill,
+    // but with a few extra keywords prefixed by -torque and the
+    // extra filter, frame-offset.
+    var style =
+        'Map {' +
+        '-torque-time-attribute: "date";' +
+        '-torque-aggregation-function: "count(cartodb_id)";' +
+        '-torque-frame-count: 760;' +
+        '-torque-animation-duration: 30;' +
+        '-torque-resolution: 2' +
+        '}' +
+        '#layer {' +
+        '  marker-width: 2;' +
+        '  marker-fill-opacity: 1;' +
+        '  marker-fill: #77B2FF; ' +
+        '  comp-op: "lighten";' +
+        '  [value > 2] { marker-fill: #A0F4FF; }' +
+        '  [value > 7] { marker-fill: #FFFFFF; }' +
+        '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}' +
+        '  [frame-offset = 2] { marker-width: 20; marker-fill-opacity: 0.02;}' +
+        '}';
 
-      <hr>
+    // This layer is an example of ship positions: replace the user
+    // and table with your own to use this example.
+    var torqueLayer = new L.TorqueLayer({
+        user: 'viz2',
+        table: 'ow',
+        cartocss: style,
+        blendmode: 'lighter',
+        // All Mapbox resources use HTTPS when available, so we'll need
+        // to make torque do the same.
+        tiler_protocol: 'https',
+        tiler_port: 443
+    });
 
-      <footer>
-        <p>&copy; Company 2014</p>
-      </footer>
-    </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.1.min.js"><\/script>')</script>
+    // This example autoplays: there are other options available:
+    // https://github.com/CartoDB/torque/blob/master/doc/API.md
+    torqueLayer.addTo(map);
+    torqueLayer.play();
+    </script>
 
-        <script src="js/vendor/bootstrap.min.js"></script>
+</body>
 
-        <script src="js/main.js"></script>
-
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');
-        </script>
-    </body>
 </html>
