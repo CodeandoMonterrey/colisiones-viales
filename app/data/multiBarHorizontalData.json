@@ -1,0 +1,46 @@
+{
+    "key": "Series 1",
+    "color": "#d67777",
+    "values": [
+        {
+            "label": "AV.REVOLUCION",
+            "value": 891
+        },
+        {
+            "label": "AV.FIDELVELAZQUEZ",
+            "value": 966
+        },
+        {
+            "label": "AV.MORONESPRIETO",
+            "value": 1021
+        },
+        {
+            "label": "AV.CONSTITUCION",
+            "value": 1314
+        },
+        {
+            "label": "AV.MADERO",
+            "value": 1485
+        },
+        {
+            "label": "AV.PASEODELOSLEONES",
+            "value": 1537
+        },
+        {
+            "label": "AV.LINCOLN",
+            "value": 1543
+        },
+        {
+            "label": "AV.RUIZCORTINES",
+            "value": 1575
+        },
+        {
+            "label": "AV.GARZASADA",
+            "value": 1929
+        },
+        {
+            "label": "AV.GONZALITOS",
+            "value": 2370
+        }
+    ]
+}

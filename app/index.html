@@ -41,6 +41,38 @@
     <style>
       body { margin:0; padding:0; }
       #map { position:absolute; top:0; bottom:0; width:100%; }
+
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      #layer_selector {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 0;
+      }
+      #layer_selector ul {
+        padding: 0; margin: 0;
+        list-style-type: none;
+      }
+      #layer_selector li {
+        border-bottom: 1px solid #999;
+        padding: 15px 30px;
+        font-family: "Helvetica", Arial;
+        font-size: 13px;
+        color: #444;
+        cursor: auto;
+      }
+      #layer_selector li:hover {
+        background-color: #F0F0F0;
+        cursor: pointer;
+      }
+      #layer_selector li.selected {
+        background-color: #EEE;
+      }
+
     </style>
 
 </head>
@@ -92,25 +124,33 @@
     </nav>
 
     <!-- Mapa -->
+
     <section id="mapa">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <br />
-                    <br />
-                    <br />
                     <h2>Mapa de percances</h2>
                     <br />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <div id="map2"></div>
                     <br />
-                    <div id="buttons">
-                        <button id="sublayer0" type="button" class="btn btn-danger">Colisiones</button>
-                        <button id="sublayer1" type="button" class="btn btn-warning">Otros</button>
-                    </div>
+                    <br />
+                    <div id="map2"></div>
+                    <div id="layer_selector" class="cartodb-infobox">
+                        <ul>
+                            <li data="TODOS" class="selected">Todos</li>
+                            <li data="ALCANCE">Alcance</li>
+                            <li data="ATROPELLO">Atropello</li>
+                            <li data="CAIDA DE PASAJERO">Caida de pasajero</li>
+                            <li data="CRUCERO">Crucero</li>
+                            <li data="DIVERSO">Diverso</li>
+                            <li data="FRONTAL">Frontal</li>
+                            <li data="LATERAL">Lateral</li>
+                            <li data="OBJETO FIJO">Objeto Fijo</li>
+                            <li data="REVERSA">Reversa</li>
+                            <li data="VEHICULO ESTACIONADO">Vehículo Estacionado</li>
+                            <li data="VOLCADURA">Volcadura</li>
+                          </ul>
+                        </div>
+                    <br />
                 </div>
             </div>
         </div>
@@ -127,21 +167,22 @@
             </div>
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <!-- <h3>Percances por mes</h3>
-                    <div id="percances">
+                    <h3>Percances por dia</h3>
+                    <div id="percances" style="min-width: 310px; height: 400px; margin: 0 auto">
                     </div>
-                    -->
+                
+                    
 
                     <h3>Principales causas de percances</h3>
                     <div id="causas">
                         <!-- bar.js -->
                     </div>
 
-                    <!-- 
+                    
                     <h3>Las 10 calles con más percances</h3>
-                    <div id="10calles">
+                    <div id="calles" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto">
                     </div>
-                    -->
+                    
                 </div>
             </div>
         </div>
@@ -161,6 +202,7 @@
             <div class="row">
                 <div id="map-container" class="col-lg-12 text-center">
                     <div id="map" class="col-lg-8 col-lg-offset-3 text-center"></div>
+                    <iframe width='100%' height='520' frameborder='0' src='https://ricalanis.cartodb.com/viz/24d95c7a-e442-11e4-85d1-0e9d821ea90d/embed_map' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
                 </div>
             </div>
             
@@ -302,12 +344,14 @@
     <script src='https://cartodb-libs.global.ssl.fastly.net/torque.full.js'></script>
 
     <!-- CartoDB.js -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.13/cartodb.js"></script>
     <!-- D3.js -->
     <script src="js/d3.min.js"></script>
     <!-- Charts -->
     <script src="charts/bar.js"></script>
-
+<!--HighCharts-->
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
     <!-- Plugin JavaScript -->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script src="js/classie.js"></script>
@@ -337,113 +381,139 @@
     -->
 
     <script>
-        // Instantiate new map object, place it in 'map' element
-        var map_object = new L.Map('map2', {
-            center: [43,0], // Southern France
-            zoom: 3
+         // create layer selector
+      function createSelector(layer) {
+        var sql = new cartodb.SQL({ user: 'ricalanis' });
+        var $options = $('#layer_selector li');
+        $options.click(function(e) {
+          // get the area of the selected layer
+          var $li = $(e.target);
+          var area = $li.attr('data');
+          // deselect all and select the clicked one
+          $options.removeClass('selected');
+          $li.addClass('selected');
+          // create query based on data from the layer
+          var query = "select * from mtydb_csv";
+          if(area !== 'TODOS') {
+            query = "select * from mtydb_csv WHERE colision_tipoaccidente LIKE '% +" + area + "%'";
+          }
+          // change the query in the layer to update the map
+          layer.setSQL(query);
         });
-
-        // Put layer data into a JS object
-        var layerSource = {
-                user_name: 'documentation',
-                type: 'cartodb',
-                sublayers: [{
-                    sql: "SELECT * FROM africa_adm0", // African countries
-                    cartocss: '#africa_adm0{polygon-fill:#FF6600;polygon-opacity:0.7;line-color:#FFF;line-width:1;line-opacity:1;}'
-                },
-                {
-                    sql: "SELECT * FROM ne_50m_lakes", // Natural and artificial lakes
-                    cartocss: '#ne_50m_lakes {polygon-fill:#0000FF;}'
-                }]
-        }
-
-        // For storing the sublayers
-        var sublayers = [];
-
-        // Pull tiles from OpenStreetMap
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map_object);
-
-        // Add data layer to your map
-        cartodb.createLayer(map_object,layerSource)
-            .addTo(map_object)
-            .done(function(layer) {
-               for (var i = 0; i < layer.getSubLayerCount(); i++) {
-                   sublayers[i] = layer.getSubLayer(i);
-               } 
-            })
-            .error(function(err) {
-                console.log("error: " + err);
-            });
-        
-        var sublayer0Shown = true;
-        $("#sublayer0").on('click', function() {
-            if (sublayer0Shown) {
-                sublayers[0].hide();
-            } else {
-                sublayers[0].show();
-            }
-            sublayer0Shown = !sublayer0Shown; 
+      }
+      function main() {
+        cartodb.createVis('map2', 'https://ricalanis.cartodb.com/api/v2/viz/cc38ba9e-e445-11e4-9d38-0e4fddd5de28/viz.json', {
+          tiles_loader: true,
+          center_lat: 25.6488126,
+          center_lon: -100.3030789,
+          zoom: 11
+        })
+        .done(function(vis, layers) {
+          // layer 0 is the base layer, layer 1 is cartodb layer
+          var subLayer = layers[1].getSubLayer(0);
+          createSelector(subLayer);
+        })
+        .error(function(err) {
+          console.log(err);
         });
-
-        var sublayer1Shown = true;
-        $("#sublayer1").on('click', function() {
-            if (sublayer1Shown) {
-                sublayers[1].hide();
-            } else {
-                sublayers[1].show();
-            }
-            sublayer1Shown = !sublayer1Shown; 
-        });
+      }
+      window.onload = main;
     </script>
 
-    <!-- Torque script -->
     <script>
-    L.mapbox.accessToken = 'pk.eyJ1IjoibWlndWVsc2FsYXphciIsImEiOiI1aC1PbDc0In0.7XFoN0VYeyfCYaxu0iobuQ';
-    var map = L.mapbox.map('map', 'examples.map-y7l23tes')
-        .setView([10, -10], 2);
-
-    // Torque uses CartoCSS styles, similar to those in TileMill,
-    // but with a few extra keywords prefixed by -torque and the
-    // extra filter, frame-offset.
-    var style =
-        'Map {' +
-        '-torque-time-attribute: "date";' +
-        '-torque-aggregation-function: "count(cartodb_id)";' +
-        '-torque-frame-count: 760;' +
-        '-torque-animation-duration: 30;' +
-        '-torque-resolution: 2' +
-        '}' +
-        '#layer {' +
-        '  marker-width: 2;' +
-        '  marker-fill-opacity: 1;' +
-        '  marker-fill: #77B2FF; ' +
-        '  comp-op: "lighten";' +
-        '  [value > 2] { marker-fill: #A0F4FF; }' +
-        '  [value > 7] { marker-fill: #FFFFFF; }' +
-        '  [frame-offset = 1] { marker-width: 10; marker-fill-opacity: 0.05;}' +
-        '  [frame-offset = 2] { marker-width: 20; marker-fill-opacity: 0.02;}' +
-        '}';
-
-    // This layer is an example of ship positions: replace the user
-    // and table with your own to use this example.
-    var torqueLayer = new L.TorqueLayer({
-        user: 'viz2',
-        table: 'ow',
-        cartocss: style,
-        blendmode: 'lighter',
-        // All Mapbox resources use HTTPS when available, so we'll need
-        // to make torque do the same.
-        tiler_protocol: 'https',
-        tiler_port: 443
+    $(function () {
+    $('#calles').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: ''
+        },
+        xAxis: {
+            categories: ["AV. REVOLUCION","AV. FIDEL VELAZQUEZ","AV. MORONES PRIETO","AV. CONSTITUCION","AV. MADERO","AV. PASEO DE LOS LEONES","AV. LINCOLN","AV. RUIZ CORTINES","AV. GARZA SADA","AV. GONZALITOS"]
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Colisiones totales'
+            }
+        },
+        legend: {
+            reversed: true
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        },
+        series: [{
+            name: 'Colisiones',
+            data: [891,966,1021,1314,1485,1537,1543,1575,1929,2370]
+        }]
     });
-
-    // This example autoplays: there are other options available:
-    // https://github.com/CartoDB/torque/blob/master/doc/API.md
-    torqueLayer.addTo(map);
-    torqueLayer.play();
+});
     </script>
+
+    <script>
+    $(function () {
+    $('#percances').highcharts({
+        chart: {
+            zoomType: 'x'
+        },
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                    'Seleccione la región para dar zoom' :
+                    'Dar click en la gráfica para dar zoom in'
+        },
+        xAxis: {
+            type: 'datetime',
+            minRange: 14 * 24 * 3600000 // fourteen days
+        },
+        yAxis: {
+            title: {
+                text: 'Número de Colisiones'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            area: {
+                fillColor: {
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                    stops: [
+                        [0, Highcharts.getOptions().colors[0]],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+                marker: {
+                    radius: 2
+                },
+                lineWidth: 1,
+                states: {
+                    hover: {
+                        lineWidth: 1
+                    }
+                },
+                threshold: null
+            }
+        },
+
+        series: [{
+            type: 'area',
+            name: 'Número de Colisiones',
+            pointInterval: 24 * 3600 * 1000,
+            pointStart: Date.UTC(2014, 0, 1),
+            data: [
+                47,70,84,77,49,42,96,90,133,93,94,119,65,58,60,92,128,76,98,98,124,96,56,161,94,77,118,101,78,103,87,64,106,103,75,103,66,91,88,107,34,86,113,103,105,137,104,105,37,91,95,85,92,96,80,101,115,56,120,119,61,114,88,43,81,94,52,102,83,103,120,110,77,87,93,88,94,93,93,78,59,92,166,129,98,86,88,95,103,53,94,100,103,112,88,125,87,48,101,79,110,82,88,84,92,105,61,123,95,102,88,94,63,123,99,57,100,124,103,119,97,101,102,92,49,98,103,106,102,84,92,108,42,84,98,71,89,95,71,118,115,54,104,97,85,91,98,44,120,102,52,117,77,106,71,89,105,115,111,82,98,74,80,97,67,104,123,87,87,90,94,74,92,39,86,113,79,106,107,107,93,44,56,79,88,104,103,106,41,104,61,120,93,85,54,56,75,89,96,56,93,113,44,116,79,90,98,84,48,113,93,121,111,85,103,88,46,108,89,59,87,107,83,102,103,78,134,123,96,98,77,48,98,90,59,102,92,118,119,106,82,92,93,57,86,71,91,107,52,111,104,88,73,65,72,85,79,65,83,110,76,104,104,96,95,45,60,85,106,89,90,87,120,92,80,109,77,83,114,98,86,84,99,70,98,111,88,67,79,86,92,91,57,96,94,116,85,73,104,38,43,59,114,76,93,94,84,87,109,66,120,66,88,107,98,39,90,85,49,106,80,88,113,70,91,107,96,87,91,81,80,98,50,99,107,50,96,67,88,96,53,86,119,107,92,111,80,80,55,113,105,83,92,89,115,118,49,84,94,93,75,94,49,111,108
+            ]
+        }]
+    });
+});
+</script>
 
 </body>
 

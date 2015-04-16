@@ -1,4 +1,4 @@
-var margin = {top: 10, right: 10, bottom: 30, left: 70},
+var margin = {top: 10, right: 10, bottom: 80, left: 70},
     width = 700 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
@@ -30,7 +30,10 @@ d3.tsv("../data/causas.tsv", type, function(error, data) {
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll("text")
+        .style('font-size','8')
+        .attr('transform','rotate(-65)');
 
   svg.append("g")
       .attr("class", "y axis")

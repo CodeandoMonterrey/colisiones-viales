@@ -1,15 +1,12 @@
 causa	percances
-Distracción	702
-Dormitando	25
-Estado Alcohólico	32
-Exceso de Dimensiones	5
-Exceso de Velocidad	76
-Invadir Carril	2234
-Mal Estacionado	12
-No Guardó Distancia	3409
-No Respetó Alto	800
-No Respetó Semáforo	253
-Otros	1252
-Sin Dato	107
-Giro Indebido	780
-Lluvia	855
+ALCANCE	9848
+ATROPELLO	878
+CAIDA DE PASAJERO	76
+CRUCERO	5516
+DIVERSO	1781
+FRONTAL	236
+LATERAL	10387
+OBJETO FIJO	2306
+REVERSA	1090
+VEHICULO ESTACIONADO	768
+VOLCADURA	333
